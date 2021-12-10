@@ -55,3 +55,6 @@ if __name__ == '__main__':
     win = Practice2()
     win.show()
     app.exec_()
+
+
+# PyQT>pyside2-uic Практика2.ui -o practice2.py

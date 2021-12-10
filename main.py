@@ -16,8 +16,6 @@ class Practice2(QtWidgets.QWidget):
         self.ui.pushButton_6.clicked.connect(self.pushbutton_params)
         self.ui.pushButton_6.setShortcut('F1')
 
-
-
     def pushbutton_move(self):
         screenWidth = QtWidgets.QApplication.screenAt(self.pos()).size().width()
         screenHeight = QtWidgets.QApplication.screenAt(self.pos()).size().height()
@@ -40,14 +38,13 @@ class Practice2(QtWidgets.QWidget):
         self.ui.plainTextEdit.appendPlainText(str(self.size()))
         self.ui.plainTextEdit.appendPlainText(str(self.minimumSize()))
         self.ui.plainTextEdit.appendPlainText(str(self.pos()))
-        self.ui.plainTextEdit.appendPlainText(f'{self.pos().x()+self.width() / 2}, {self.pos().y()+self.height() / 2}')
+        self.ui.plainTextEdit.appendPlainText(
+            f'{self.pos().x() + self.width() / 2}, {self.pos().y() + self.height() / 2}')
 
-    def event(self, event:QtCore.QEvent):
-        print(event.type())
-
-
-
-
+    def event(self, event: QtCore.QEvent):
+        # print(event.type())
+        if event.type() == QtCore.QEvent.Type.WindowStateChange:
+            print(event.type())
 
 
 if __name__ == '__main__':
@@ -55,6 +52,3 @@ if __name__ == '__main__':
     win = Practice2()
     win.show()
     app.exec_()
-
-
-# PyQT>pyside2-uic Практика2.ui -o practice2.py

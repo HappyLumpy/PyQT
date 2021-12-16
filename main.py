@@ -14,9 +14,9 @@ class Practice2(QtWidgets.QWidget):
         self.ui.pushButton_4.clicked.connect(self.pushbutton_move)
         self.ui.pushButton_5.clicked.connect(self.pushbutton_move)
         self.ui.pushButton_6.clicked.connect(self.pushbutton_params)
+        self.ui.dial.valueChanged.connect(self.lsdNumberValue)
+        self.ui.horizontalSlider.valueChanged.connect(self.lsdNumberValue)
         self.ui.pushButton_6.setShortcut('F1')
-
-
 
     def pushbutton_move(self):
         screenWidth = QtWidgets.QApplication.screenAt(self.pos()).size().width()
@@ -40,13 +40,38 @@ class Practice2(QtWidgets.QWidget):
         self.ui.plainTextEdit.appendPlainText(str(self.size()))
         self.ui.plainTextEdit.appendPlainText(str(self.minimumSize()))
         self.ui.plainTextEdit.appendPlainText(str(self.pos()))
-        self.ui.plainTextEdit.appendPlainText(f'{self.pos().x()+self.width() / 2}, {self.pos().y()+self.height() / 2}')
+        self.ui.plainTextEdit.appendPlainText(
+            f'{self.pos().x() + self.width() / 2}, {self.pos().y() + self.height() / 2}')
 
-    def event(self, event:QtCore.QEvent):
-        print(event.type())
+    def event(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.Type.Move:
+            print(self.pos())
+        if event.type() == QtCore.QEvent.Type.Resize:
+            print(self.size())
+        if event.type() == QtCore.QEvent.Type.WindowStateChange:
+            self.ui.plainTextEdit.appendPlainText(str(QtWidgets.QApplication.applicationState()))
+        return QtWidgets.QWidget.event(self, event)
 
+    def eventFilter(self, watched: QtCore.QObject, event: QtCore.QEvent) -> bool:
+        if watched == self.dial:
+            self.ui.horizontalSlider.setValue(self.ui.lcdNumber.value())
+        elif watched == self.slider:
+            self.ui.lcdNumber.display(self.ui.horizontalSlider.value())
+            self.ui.dial.setValue(self.ui.lcdNumber.value())
+        return super(Practice2, self).eventFilter(watched, event)
 
+    def dial(self):
+        print("dial")
+        self.ui.lcdNumber.display(self.ui.dial.value())
+        self.ui.horizontalSlider.setValue(self.ui.lcdNumber.value())
 
+    def slider(self):
+        print("slider")
+        self.ui.lcdNumber.display(self.ui.horizontalSlider.value())
+        self.ui.dial.setValue(self.ui.lcdNumber.value())
+
+    def lsdNumberValue(self):
+        self.installEventFilter(self)
 
 
 

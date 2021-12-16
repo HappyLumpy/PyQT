@@ -14,8 +14,8 @@ class Practice2(QtWidgets.QWidget):
         self.ui.pushButton_4.clicked.connect(self.pushbutton_move)
         self.ui.pushButton_5.clicked.connect(self.pushbutton_move)
         self.ui.pushButton_6.clicked.connect(self.pushbutton_params)
-        self.ui.dial.valueChanged.connect(self.lsdNumberValue)
-        self.ui.horizontalSlider.valueChanged.connect(self.lsdNumberValue)
+        self.ui.dial.valueChanged.connect(self.dial)
+        self.ui.horizontalSlider.valueChanged.connect(self.slider)
         self.ui.pushButton_6.setShortcut('F1')
 
     def pushbutton_move(self):
@@ -52,13 +52,13 @@ class Practice2(QtWidgets.QWidget):
             self.ui.plainTextEdit.appendPlainText(str(QtWidgets.QApplication.applicationState()))
         return QtWidgets.QWidget.event(self, event)
 
-    def eventFilter(self, watched: QtCore.QObject, event: QtCore.QEvent) -> bool:
-        if watched == self.dial:
-            self.ui.horizontalSlider.setValue(self.ui.lcdNumber.value())
-        elif watched == self.slider:
-            self.ui.lcdNumber.display(self.ui.horizontalSlider.value())
-            self.ui.dial.setValue(self.ui.lcdNumber.value())
-        return super(Practice2, self).eventFilter(watched, event)
+    # def eventFilter(self, watched: QtCore.QObject, event: QtCore.QEvent) -> bool:
+    #     if watched == self.dial:
+    #         self.ui.horizontalSlider.setValue(self.ui.lcdNumber.value())
+    #     elif watched == self.slider:
+    #         self.ui.lcdNumber.display(self.ui.horizontalSlider.value())
+    #         self.ui.dial.setValue(self.ui.lcdNumber.value())
+    #     return super(Practice2, self).eventFilter(watched, event)
 
     def dial(self):
         print("dial")
@@ -70,8 +70,7 @@ class Practice2(QtWidgets.QWidget):
         self.ui.lcdNumber.display(self.ui.horizontalSlider.value())
         self.ui.dial.setValue(self.ui.lcdNumber.value())
 
-    def lsdNumberValue(self):
-        self.installEventFilter(self)
+
 
 
 

@@ -68,6 +68,8 @@ class Ui_Form(object):
         self.dial = QDial(Form)
         self.dial.setObjectName(u"dial")
         self.dial.setMinimumSize(QSize(200, 200))
+        self.dial.setMinimum(0)
+        self.dial.setMaximum(100)
 
         self.horizontalLayout_5.addWidget(self.dial)
 
@@ -131,6 +133,8 @@ class Ui_Form(object):
         self.horizontalSlider = QSlider(Form)
         self.horizontalSlider.setObjectName(u"horizontalSlider")
         self.horizontalSlider.setOrientation(Qt.Horizontal)
+        self.horizontalSlider.setMinimum(0)
+        self.horizontalSlider.setMaximum(100)
 
         self.gridLayout.addWidget(self.horizontalSlider, 5, 0, 1, 1)
 

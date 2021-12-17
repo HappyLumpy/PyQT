@@ -61,17 +61,12 @@ class Practice2(QtWidgets.QWidget):
     #     return super(Practice2, self).eventFilter(watched, event)
 
     def dial(self):
-        print("dial")
         self.ui.lcdNumber.display(self.ui.dial.value())
         self.ui.horizontalSlider.setValue(self.ui.lcdNumber.value())
 
     def slider(self):
-        print("slider")
         self.ui.lcdNumber.display(self.ui.horizontalSlider.value())
         self.ui.dial.setValue(self.ui.lcdNumber.value())
-
-
-
 
 
 if __name__ == '__main__':

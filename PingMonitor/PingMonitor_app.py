@@ -1,11 +1,11 @@
 import requests
-from PySide2 import QtCore, QtWidgets
+from PySide2 import QtCore, QtWidgets, QtGui
+from PySide2.QtCore import QSettings
 from PySide2.QtWidgets import QInputDialog, QLineEdit
 
 from PingMonitor_design import Ui_Form as PingMonitor_Ui_Form
 from PingMonitorSettings_design import Ui_Form as PingMonitorSettings_Ui_Form
 from Tracert_design import Ui_Form as Tracert_design_Ui_Form
-from AddIP import Ui_Form as AddIP_Ui_Form
 from functools import partial
 
 
@@ -15,6 +15,8 @@ class PingMonitorSettings(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         super(PingMonitorSettings, self).__init__(parent)
+        self.settings = QtCore.QSettings("Settings")
+        self.listIP = self.settings.value("IPList", [])
         self.ui = PingMonitorSettings_Ui_Form()
         self.ui.setupUi(self)
         self.ui.pushButton.clicked.connect(self.addip)
@@ -33,9 +35,9 @@ class PingMonitorSettings(QtWidgets.QWidget):
             self.signal_del.emit(self.ui.listWidget.row(ip))
             self.ui.listWidget.takeItem(self.ui.listWidget.row(ip))
 
-    def closeEvent(self, event):
-        print("close")
-        super().closeEvent(event)
+    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+        self.listIP = self.ui.listWidget.Item()
+        self.settings.setValue("IPList", self.listIP)
 
 
 class Tracert(QtWidgets.QWidget):

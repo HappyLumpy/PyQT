@@ -19,7 +19,7 @@ class PingMonitorSettings(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(PingMonitorSettings, self).__init__(parent)
         self.settings = QtCore.QSettings("IPList")
-        # self.listIp = self.settings.value("IPList", [])
+        self.listIp = self.settings.value("IPList", list)
         self.ui = PingMonitorSettings_Ui_Form()
         self.ui.setupUi(self)
         self.loadData()
@@ -27,7 +27,6 @@ class PingMonitorSettings(QtWidgets.QWidget):
         self.ui.pushButton_2.clicked.connect(self.delip)
 
     def addip(self):
-        self.settings = QtCore.QSettings("IPList")
         ip = QInputDialog.getText(self, "QInputDialog().getText()", "Ip adress:", QLineEdit.Normal)
         self.ui.listWidget.addItem(ip[0])
         self.signal_data.emit(str(ip[0]))
@@ -41,11 +40,8 @@ class PingMonitorSettings(QtWidgets.QWidget):
             self.ui.listWidget.takeItem(self.ui.listWidget.row(ip))
 
     def loadData(self):
-        self.settings = QtCore.QSettings("IPList")
-        # for i in self.listIp("IPList"):
-        #     self.ui.listWidget.addItem(i)
-
-
+        for i in self.listIp:
+            self.ui.listWidget.addItem(i)
 
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         list_widget = self.ui.listWidget
@@ -53,7 +49,6 @@ class PingMonitorSettings(QtWidgets.QWidget):
         for index in range(list_widget.count()):
             items.append(list_widget.item(index).text())
         self.settings.setValue("IPList", items)
-
 
 
 class Tracert(QtWidgets.QWidget):
@@ -75,8 +70,6 @@ class PingMonitor(QtWidgets.QWidget):
         self.ui.pushButton.clicked.connect(self.start_ping)
         self.ui.pushButton_2.clicked.connect(self.stop_ping)
 
-
-
     def getdatafromsettings(self, text):
         self.ui.tableWidget.insertRow(self.row)
         self.ui.tableWidget.setItem(self.row, 0, QtWidgets.QTableWidgetItem(text))
@@ -96,10 +89,9 @@ class PingMonitor(QtWidgets.QWidget):
         self.win = Tracert()
         self.win.show()
 
-
     def start_ping(self):
         for i in range(self.row):
-            self.PingThread.setparametres(self.ui.tableWidget.item(i,0).text())
+            self.PingThread.setparametres(self.ui.tableWidget.item(i, 0).text())
             self.PingThread.mysignal.connect(self.plainTextEdit, QtCore.Qt.QueuedConnection)
             self.PingThread.start()
 
@@ -121,8 +113,6 @@ class PingThread(QtCore.QThread):
 
     def setparametres(self, ip):
         self.ip = ip
-
-
 
 
 if __name__ == '__main__':

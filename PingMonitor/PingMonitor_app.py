@@ -57,8 +57,12 @@ class Tracert(QtWidgets.QWidget):
         self.ui = Tracert_design_Ui_Form()
         self.ui.setupUi(self)
 
+    # def start_tracert(self):
+
 
 class PingMonitor(QtWidgets.QWidget):
+    signal_data_tracert = QtCore.Signal(str)
+
     def __init__(self, parent=None):
         super(PingMonitor, self).__init__(parent)
         self.ui = PingMonitor_Ui_Form()
@@ -130,6 +134,13 @@ class PingMonitor(QtWidgets.QWidget):
         for index in range(table_widget.rowCount()):
             items.append(table_widget.item(index, 0).text())
         self.settings.setValue("IPList", items)
+
+    def tracent_add_ip(self):
+        select_ip = self.ui.tableWidget.selectedItems()
+        if not select_ip:
+            return
+        else:
+            self.signal_del.emit(select_ip.text)
 
 
 class PingThread(QtCore.QThread):

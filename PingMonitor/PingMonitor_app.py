@@ -1,3 +1,5 @@
+import os
+import subprocess
 from datetime import datetime
 
 from PySide2 import QtCore, QtWidgets, QtGui
@@ -56,8 +58,13 @@ class Tracert(QtWidgets.QWidget):
         super(Tracert, self).__init__(parent)
         self.ui = Tracert_design_Ui_Form()
         self.ui.setupUi(self)
+        # self.get_data()
 
-    # def start_tracert(self):
+   # def get_data(self):
+   #      self.PingMonitor().signal_data_tracert.connect(self.start_tracert)
+   #
+   #  def start_tracert(self, text):
+   #      self.ui.plainTextEdit.appendPlainText(text)
 
 
 class PingMonitor(QtWidgets.QWidget):
@@ -95,6 +102,15 @@ class PingMonitor(QtWidgets.QWidget):
     def tracert(self):
         self.win = Tracert()
         self.win.show()
+        select_ip = self.ui.tableWidget.selectedItems()
+        if not select_ip:
+            return
+        else:
+            ping = subprocess.Popen(f'tracert {select_ip[0].text()}', stdout=subprocess.PIPE, stderr=None, shell=True)
+            tracert = ping.communicate()
+            tracert_split = str(tracert).split(r'\r\n')
+            for i in tracert_split[1:-1]:
+                self.win.ui.plainTextEdit.appendPlainText(str(i))
 
     def start_ping(self):
         iplist = []
@@ -140,7 +156,7 @@ class PingMonitor(QtWidgets.QWidget):
         if not select_ip:
             return
         else:
-            self.signal_del.emit(select_ip.text)
+            self.signal_data_tracert.emit(select_ip.text)
 
 
 class PingThread(QtCore.QThread):

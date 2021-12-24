@@ -1,5 +1,5 @@
-import datetime
-import time
+from datetime import datetime
+
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtCore import QSettings
 
@@ -19,7 +19,7 @@ class PingMonitorSettings(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(PingMonitorSettings, self).__init__(parent)
         self.settings = QtCore.QSettings("IPList")
-        self.listIp = self.settings.value("IPList", list)
+        self.listIp = self.settings.value("IPList", [])
         self.ui = PingMonitorSettings_Ui_Form()
         self.ui.setupUi(self)
         self.loadData()
@@ -62,10 +62,13 @@ class PingMonitor(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(PingMonitor, self).__init__(parent)
         self.ui = PingMonitor_Ui_Form()
+        self.settings = QtCore.QSettings("IPList")
+        self.listIp = self.settings.value("IPList", [])
         self.ui.setupUi(self)
+        self.loadData()
         self.row = 0
         self.PingThread = PingThread()
-        self.ui.pushButton_4.clicked.connect(self.settings)
+        self.ui.pushButton_4.clicked.connect(self.settings_ip)
         self.ui.pushButton_3.clicked.connect(self.tracert)
         self.ui.pushButton.clicked.connect(self.start_ping)
         self.ui.pushButton_2.clicked.connect(self.stop_ping)
@@ -79,7 +82,7 @@ class PingMonitor(QtWidgets.QWidget):
         self.ui.tableWidget.removeRow(int)
         self.row -= 1
 
-    def settings(self):
+    def settings_ip(self):
         self.win = PingMonitorSettings()
         self.win.show()
         self.win.signal_data.connect(self.getdatafromsettings)
@@ -90,29 +93,57 @@ class PingMonitor(QtWidgets.QWidget):
         self.win.show()
 
     def start_ping(self):
-        for i in range(self.row):
-            self.PingThread.setparametres(self.ui.tableWidget.item(i, 0).text())
-            self.PingThread.mysignal.connect(self.plainTextEdit, QtCore.Qt.QueuedConnection)
-            self.PingThread.start()
+        iplist = []
+        for index in range(self.ui.tableWidget.rowCount()):
+            iplist.append(self.ui.tableWidget.item(index, 0).text())
+        self.PingThread.setparametres(iplist)
+        self.PingThread.mysignal.connect(self.plainTextEdit, QtCore.Qt.QueuedConnection)
+        self.PingThread.mysignal.connect(self.statusIp, QtCore.Qt.QueuedConnection)
+        self.PingThread.start()
 
     def stop_ping(self):
         self.PingThread.status = False
 
-    def plainTextEdit(self, text):
-        self.ui.plainTextEdit.appendPlainText(str(text))
+    def plainTextEdit(self, dict_ip):
+        for index, text in dict_ip.items():
+            if text[:17] == 'Request timed out':
+                current_datetime = datetime.now()
+                self.ui.plainTextEdit.appendPlainText(f'ip:{self.ui.tableWidget.item(index, 0).text()}')
+                self.ui.plainTextEdit.appendPlainText(str(f'status: {text[:17]}'))
+                self.ui.plainTextEdit.appendPlainText(str(f'time: {current_datetime}'))
+
+    def statusIp(self, dict_ip):
+        for index, text in dict_ip.items():
+            if text[:17] == 'Request timed out':
+                self.ui.tableWidget.setItem(index, 1, QtWidgets.QTableWidgetItem(str("Не доступен")))
+            else:
+                self.ui.tableWidget.setItem(index, 1, QtWidgets.QTableWidgetItem(str("Доступен")))
+
+    def loadData(self):
+        for index, value in enumerate(self.listIp):
+            self.ui.tableWidget.insertRow(index)
+            self.ui.tableWidget.setItem(index, 0, QtWidgets.QTableWidgetItem(str(value)))
+
+    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+        table_widget = self.ui.tableWidget
+        items = []
+        for index in range(table_widget.rowCount()):
+            items.append(table_widget.item(index, 0).text())
+        self.settings.setValue("IPList", items)
 
 
 class PingThread(QtCore.QThread):
-    mysignal = QtCore.Signal(str)
+    mysignal = QtCore.Signal(dict)
 
     def run(self):
         self.status = True
         while self.status:
-            r = ping(self.ip)
-            self.mysignal.emit(str(r))
+            for index, ip in enumerate(self.iplist):
+                r = ping(ip, interval=1, count=1)
+                self.mysignal.emit({index: str(r)})
 
-    def setparametres(self, ip):
-        self.ip = ip
+    def setparametres(self, iplist):
+        self.iplist = iplist
 
 
 if __name__ == '__main__':

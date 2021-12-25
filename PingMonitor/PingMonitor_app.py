@@ -1,4 +1,5 @@
 import os
+import socket
 import subprocess
 from datetime import datetime
 
@@ -11,6 +12,7 @@ from pythonping import ping
 from PingMonitor_design import Ui_Form as PingMonitor_Ui_Form
 from PingMonitorSettings_design import Ui_Form as PingMonitorSettings_Ui_Form
 from Tracert_design import Ui_Form as Tracert_design_Ui_Form
+from IP_check import Ui_Form as IP_check_Ui_Form
 from functools import partial
 
 
@@ -30,8 +32,13 @@ class PingMonitorSettings(QtWidgets.QWidget):
 
     def addip(self):
         ip = QInputDialog.getText(self, "QInputDialog().getText()", "Ip adress:", QLineEdit.Normal)
-        self.ui.listWidget.addItem(ip[0])
-        self.signal_data.emit(str(ip[0]))
+        try:
+            socket.inet_aton(ip[0])
+            self.ui.listWidget.addItem(ip[0])
+            self.signal_data.emit(str(ip[0]))
+        except socket.error:
+            self.win = IP_check()
+            self.win.show()
 
     def delip(self):
         listIp = self.ui.listWidget.selectedItems()
@@ -53,18 +60,19 @@ class PingMonitorSettings(QtWidgets.QWidget):
         self.settings.setValue("IPList", items)
 
 
+class IP_check(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        super(IP_check, self).__init__(parent)
+        self.ui = IP_check_Ui_Form()
+        self.ui.setupUi(self)
+        self.ui.pushButton.clicked.connect(self.close)
+
+
 class Tracert(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(Tracert, self).__init__(parent)
         self.ui = Tracert_design_Ui_Form()
         self.ui.setupUi(self)
-        # self.get_data()
-
-   # def get_data(self):
-   #      self.PingMonitor().signal_data_tracert.connect(self.start_tracert)
-   #
-   #  def start_tracert(self, text):
-   #      self.ui.plainTextEdit.appendPlainText(text)
 
 
 class PingMonitor(QtWidgets.QWidget):

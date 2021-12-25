@@ -1,19 +1,14 @@
-import os
 import socket
 import subprocess
 from datetime import datetime
-
 from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtCore import QSettings
-
 from PySide2.QtWidgets import QInputDialog, QLineEdit
 from pythonping import ping
-
 from PingMonitor_design import Ui_Form as PingMonitor_Ui_Form
 from PingMonitorSettings_design import Ui_Form as PingMonitorSettings_Ui_Form
 from Tracert_design import Ui_Form as Tracert_design_Ui_Form
 from IP_check import Ui_Form as IP_check_Ui_Form
-from functools import partial
+
 
 
 class PingMonitorSettings(QtWidgets.QWidget):

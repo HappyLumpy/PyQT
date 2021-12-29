@@ -5,6 +5,7 @@ from CalculateTest import Ui_Form
 class CalcApp(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(CalcApp, self).__init__(parent)
+        self.count_point = 0
         self.method = None
         self.a = None
         self.ui = Ui_Form()
@@ -51,7 +52,12 @@ class CalcApp(QtWidgets.QWidget):
             self.ui.Result.setText('-' + self.ui.Result.text())
 
     def push_point(self):
-        self.ui.Result.setText(self.ui.Result.text() + '.')
+        if self.ui.Result.text().find('.'):
+            if self.count_point == 0:
+                self.count_point += 1
+                self.ui.Result.setText(self.ui.Result.text() + '.')
+            else:
+                self.ui.Result.setText(self.ui.Result.text())
 
     def push_add(self):
         if self.method != "add":
@@ -98,7 +104,6 @@ class CalcApp(QtWidgets.QWidget):
             self.method = "div"
         else:
             if self.a != 0:
-
                 self.a /= float(self.ui.Result.text())
                 self.ui.Result.setText('0')
                 self.method = "div"
@@ -162,7 +167,7 @@ class CalcApp(QtWidgets.QWidget):
     def push_sqrtX(self):
         b = float(self.ui.Result.text())
         if float(self.ui.Result.text()) >= 0:
-            result = b**0.5
+            result = b ** 0.5
 
             if result % 1 == 0:
                 result = int(result)
@@ -176,7 +181,7 @@ class CalcApp(QtWidgets.QWidget):
         self.method = 'eu'
 
     def push_X2(self):
-        result = float(self.ui.Result.text())**2
+        result = float(self.ui.Result.text()) ** 2
         if result % 1 == 0:
             result = int(result)
             self.ui.Result.setText(str(result))
@@ -185,7 +190,7 @@ class CalcApp(QtWidgets.QWidget):
         self.method = 'eu'
 
     def push_1_X(self):
-        result = 1/float(self.ui.Result.text())
+        result = 1 / float(self.ui.Result.text())
         if result % 1 == 0:
             result = int(result)
             self.ui.Result.setText(str(result))
@@ -212,6 +217,7 @@ class CalcApp(QtWidgets.QWidget):
         else:
             self.ui.Result.setText(str(result))
             self.method = 'eu'
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication()
